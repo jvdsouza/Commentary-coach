@@ -4,16 +4,23 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:docker": "docker compose -f docker-compose.dev.yml up --build --remove-orphans",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
+    "@commentary-coach/shared": "workspace:*",
     "assemblyai": "^4.32.1",
-    "next": "16.2.6"
+    "next": "16.2.6",
+    "openai": "^6.38.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.6"
   }
 }

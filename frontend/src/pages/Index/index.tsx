@@ -1,4 +1,4 @@
-import React, { memo, Suspense } from 'react'
+import React, { memo, useState } from 'react'
 
 import Box from '../../components/Box'
 import Spinner from '../../components/Spinner'
@@ -6,11 +6,16 @@ import logo from '../../logo.svg'
 
 import Counter from './Counter'
 import DocList from './DocList'
+import VideoUpload from './VideoUpload'
+import AnalysisResult from './AnalysisResult'
+import { TranscriptChunk } from './types'
 import styles from './index.module.css'
 
 interface Props {}
 
 const Index: React.FC<Props> = memo(() => {
+  const [analysisResult, setAnalysisResult] = useState<TranscriptChunk[] | null>(null)
+
   return (
     <>
       <Box>
@@ -21,10 +26,13 @@ const Index: React.FC<Props> = memo(() => {
         <Counter />
       </Box>
       <Box>
-        <Suspense fallback={<Spinner size="xl" />}>
-          <DocList />
-        </Suspense>
+        <VideoUpload onResult={setAnalysisResult} />
       </Box>
+      {analysisResult && (
+        <Box>
+          <AnalysisResult result={analysisResult} />
+        </Box>
+      )}
     </>
   )
 })

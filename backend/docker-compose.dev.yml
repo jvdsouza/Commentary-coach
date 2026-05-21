@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+      target: dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PNPM_STORE_DIR=/app/.pnpm-store
+    volumes:
+      - ../backend:/app/backend
+      - ../shared:/app/shared
+      - /app/node_modules
+      - /app/backend/node_modules
+      - /app/shared/node_modules
+    command: pnpm --filter backend dev
+    restart: unless-stopped

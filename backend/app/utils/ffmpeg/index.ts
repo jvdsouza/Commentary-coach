@@ -1,7 +1,6 @@
 import { exec } from "child_process";
 import { promisify } from "util";
 import { writeFile, unlink } from "fs/promises";
-import { existsSync } from "fs";
 import path from "path";
 import { randomBytes } from "crypto";
 import { tmpdir } from "os";
@@ -123,7 +122,7 @@ export async function getAudioDuration(buffer: Buffer): Promise<number> {
     // Write buffer to temporary file
     await writeFile(tempPath, buffer);
 
-    const command = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1:noinherit=1 "${tempPath}"`;
+    const command = `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${tempPath}"`;
     const { stdout } = await execPromise(command);
     const duration = parseFloat(stdout.trim());
     return isNaN(duration) ? 0 : duration;

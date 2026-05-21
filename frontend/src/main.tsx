@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './global.css'
 
@@ -10,7 +9,7 @@ const root = ReactDOM.createRoot(document.getElementById('root')!)
 // Certify MSW's Service Worker is available before starting React app
 import('../mocks/browser')
   .then(async ({ worker }) => {
-    return worker.start()
+    return worker.start({ onUnhandledRequest: 'bypass' })
   }) // Run <App /> when Service Worker is ready to intercept requests
   .then(() => {
     root.render(<App />)

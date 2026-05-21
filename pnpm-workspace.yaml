@@ -1,0 +1,11 @@
+packages:
+  - 'shared'
+  - 'frontend'
+  - 'backend'
+
+onlyBuiltDependencies:
+  - '@swc/core'
+  - '@tailwindcss/oxide'
+  - esbuild
+  - msw
+  - unrs-resolver

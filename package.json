@@ -1,0 +1,7 @@
+{
+  "name": "commentary-coach",
+  "private": true,
+  "scripts": {
+    "dev": "node run.js"
+  }
+}

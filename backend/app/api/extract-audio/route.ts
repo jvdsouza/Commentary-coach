@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { extractAudio, getAudioDuration, checkFfmpegAvailable } from "@/app/utils/ffmpeg";
+import { extractAudio, checkFfmpegAvailable } from "@/app/utils/ffmpeg";
 import { isValidVideoFile } from "@/app/utils/file-handler";
-import { analyseCommentaryMethod } from "@/app/utils/analysis";
+import { analyzeCommentary } from "@/app/utils/AssemblyAI";
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
@@ -62,27 +62,12 @@ export async function POST(request: NextRequest) {
       format: "m4a",
     });
 
-    // Optional: Analyze extracted audio to get feedback with timestamps
-    const analysis = await analyseCommentaryMethod.assemblyAI(audioBuffer);
-
-    // Get audio duration
-    let duration = 0;
-    try {
-      duration = await getAudioDuration(audioBuffer);
-    } catch (error) {
-      console.warn("Failed to get audio duration:", error);
-    }
-
-    // Return audio file with appropriate headers
-    return new NextResponse(new Uint8Array(audioBuffer), {
-      status: 200,
-      headers: {
-        "Content-Type": "audio/mp4",
-        "Content-Disposition": 'attachment; filename="extracted-audio.m4a"',
-        "Content-Length": audioBuffer.length.toString(),
-        "X-Audio-Duration": duration.toString(),
-      },
+    const analysis = await analyzeCommentary({
+      strategy: "STT",
+      audioInput: audioBuffer,
     });
+    
+    return NextResponse.json(analysis);
   } catch (error) {
     console.error("[API] Error extracting audio:", error);
 
