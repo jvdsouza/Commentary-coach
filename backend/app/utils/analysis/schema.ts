@@ -2,6 +2,7 @@ import { z } from "zod";
 import { zodTextFormat } from "openai/helpers/zod";
 import type { EasyInputMessage } from "openai/resources/responses/responses";
 import type { TranscriptChunk } from "@/app/utils/AssemblyAI/types";
+import { MODELS } from "./config";
 
 const noteSchema = z.object({
   startMs: z.number(),
@@ -69,7 +70,7 @@ Rules:
 };
 
 export const buildOpenAIConfig = (transcriptChunk: TranscriptChunk) => ({
-  model: "gpt-5.3-instant",
+  model: MODELS.chunkAnalysis,
   input: [
     SYSTEM_MESSAGE,
     { role: "user", content: JSON.stringify(transcriptChunk) } satisfies EasyInputMessage,

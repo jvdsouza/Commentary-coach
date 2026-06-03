@@ -1,20 +1,24 @@
-import React, { memo, useState } from 'react'
+import React, { memo, useCallback } from 'react'
+import { useNavigate } from 'react-router'
 
 import Box from '../../components/Box'
-import Spinner from '../../components/Spinner'
 import logo from '../../logo.svg'
 
 import Counter from './Counter'
-import DocList from './DocList'
 import VideoUpload from './VideoUpload'
-import AnalysisResult from './AnalysisResult'
-import { TranscriptChunk } from './types'
+import DevPanel from './DevPanel'
+import type { AnalysisData } from './types'
+import { featureFlags } from '../../config'
 import styles from './index.module.css'
 
 interface Props {}
 
 const Index: React.FC<Props> = memo(() => {
-  const [analysisResult, setAnalysisResult] = useState<TranscriptChunk[] | null>(null)
+  const navigate = useNavigate()
+
+  const handleResult = useCallback((result: AnalysisData) => {
+    navigate(`/review/${result.reviewId ?? 'local'}`, { state: { result } })
+  }, [navigate])
 
   return (
     <>
@@ -26,11 +30,11 @@ const Index: React.FC<Props> = memo(() => {
         <Counter />
       </Box>
       <Box>
-        <VideoUpload onResult={setAnalysisResult} />
+        <VideoUpload onResult={handleResult} />
       </Box>
-      {analysisResult && (
+      {featureFlags.devPanel && (
         <Box>
-          <AnalysisResult result={analysisResult} />
+          <DevPanel onLoad={handleResult} />
         </Box>
       )}
     </>

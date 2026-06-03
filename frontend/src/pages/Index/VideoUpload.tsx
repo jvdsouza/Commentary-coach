@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import styles from './VideoUpload.module.css'
-import { TranscriptChunk } from './types'
+import type { AnalysisData, ExtractAudioResponse } from './types'
 
 interface Props {
-  onResult: (result: TranscriptChunk[]) => void
+  onResult: (result: AnalysisData) => void
 }
 
 const VideoUpload: React.FC<Props> = ({ onResult }) => {
@@ -27,25 +27,32 @@ const VideoUpload: React.FC<Props> = ({ onResult }) => {
     const formData = new FormData()
     formData.append('video', videoFile)
 
-    setStatus('Uploading video...')
-
     try {
-      const response = await fetch('http://localhost:3000/api/extract-audio', {
+      setStatus('Uploading and transcribing video...')
+      const extractRes = await fetch('http://localhost:3000/api/extract-audio', {
         method: 'POST',
         body: formData,
       })
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        throw new Error(errorText || response.statusText)
+      if (!extractRes.ok) {
+        throw new Error((await extractRes.text()) || extractRes.statusText)
       }
+      const { reviewId, chunks }: ExtractAudioResponse = await extractRes.json()
 
-      const data = await response.json()
-      console.log('API response:', data)
+      setStatus(`Analysing ${chunks.length} chunk${chunks.length === 1 ? '' : 's'}...`)
+      const analysisRes = await fetch('http://localhost:3000/api/analysis', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reviewId, chunks }),
+      })
+      if (!analysisRes.ok) {
+        throw new Error((await analysisRes.text()) || analysisRes.statusText)
+      }
+      const data: AnalysisData = await analysisRes.json()
+
       onResult(data)
       setStatus('Analysis complete.')
     } catch (error) {
-      setStatus(`Upload failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      setStatus(`Failed: ${error instanceof Error ? error.message : 'Unknown error'}`)
     }
   }
 

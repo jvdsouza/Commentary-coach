@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { extractAudio, checkFfmpegAvailable } from "@/app/utils/ffmpeg";
 import { isValidVideoFile } from "@/app/utils/file-handler";
 import { analyzeCommentary } from "@/app/utils/AssemblyAI";
+import {
+  createReview,
+  setReviewStatus,
+  insertSegments,
+  insertChunks,
+} from "@/app/utils/db/reviews";
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
@@ -62,12 +68,24 @@ export async function POST(request: NextRequest) {
       format: "m4a",
     });
 
-    const analysis = await analyzeCommentary({
+    const chunks = await analyzeCommentary({
       strategy: "STT",
       audioInput: audioBuffer,
     });
-    
-    return NextResponse.json(analysis);
+
+    let reviewId: string | null = null;
+    try {
+      reviewId = await createReview(videoFile.name);
+      await setReviewStatus(reviewId, "transcribing");
+      const allSegments = chunks.flatMap((c) => c.segments);
+      await insertSegments(reviewId, allSegments);
+      await insertChunks(reviewId, chunks);
+      await setReviewStatus(reviewId, "analyzing");
+    } catch (dbError) {
+      console.error("[extract-audio] DB persist failed, continuing without reviewId:", dbError);
+    }
+
+    return NextResponse.json({ reviewId, chunks });
   } catch (error) {
     console.error("[API] Error extracting audio:", error);
 

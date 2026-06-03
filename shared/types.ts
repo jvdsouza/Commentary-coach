@@ -70,9 +70,28 @@ export type NextSessionFocus = {
   drills: string[];
 };
 
+export type SpeakerFeedback = {
+  speaker: string;
+  topStrengths: TopStrength[];
+  topImprovementAreas: TopImprovementArea[];
+  nextSessionFocus: NextSessionFocus;
+};
+
 export type SynthesisResult = {
   topStrengths: TopStrength[];
   topImprovementAreas: TopImprovementArea[];
   nextSessionFocus: NextSessionFocus;
   overallSummary: string;
+  speakerFeedback: SpeakerFeedback[];
+};
+
+export type ExtractAudioResponse = {
+  reviewId: string;
+  chunks: TranscriptChunk[];
+};
+
+export type AnalysisData = {
+  reviewId: string;
+  chunkResults: ChunkAnalysisResult[];
+  synthesis: SynthesisResult;
 };

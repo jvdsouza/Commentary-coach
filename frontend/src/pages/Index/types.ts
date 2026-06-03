@@ -1,1 +1,9 @@
-export type { TranscriptSegment, TranscriptChunk, ChunkAnalysisResult } from "@commentary-coach/shared";
+export type {
+  TranscriptSegment,
+  TranscriptChunk,
+  ChunkAnalysisResult,
+  SynthesisResult,
+  SpeakerFeedback,
+  ExtractAudioResponse,
+  AnalysisData,
+} from "@commentary-coach/shared";
