@@ -1,0 +1,52 @@
+.tablist {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  padding: 9px 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  background: transparent;
+  color: #9aa0ab;
+  cursor: pointer;
+  margin-bottom: -1px;
+  transition: color 150ms ease, background 150ms ease;
+  white-space: nowrap;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.tab:hover:not(.tabActive) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.tabActive {
+  background: var(--color-surface);
+  border-color: rgba(255, 255, 255, 0.1);
+  border-bottom-color: var(--color-surface);
+  color: #fff;
+}
+
+/* Primary: outer tabs — creates the raised content panel */
+.panel {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  padding: 24px;
+}
+
+/* Secondary: inner/nested tabs — no extra box, just the tablist separator */
+.tabSecondary {
+  font-size: 0.8125rem;
+  padding: 7px 14px;
+}
+
+.panelSecondary {
+  padding: 20px 0 0;
+}

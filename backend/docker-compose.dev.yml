@@ -40,7 +40,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: sh -c "pnpm --filter backend db:push && pnpm --filter backend dev"
+    command: sh -c "pnpm --filter backend db:push --force && pnpm --filter backend dev"
     restart: unless-stopped
 
 volumes:

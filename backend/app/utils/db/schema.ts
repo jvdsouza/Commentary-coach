@@ -100,6 +100,7 @@ export const reviewSpeakerFeedback = pgTable("review_speaker_feedback", {
     .notNull()
     .references(() => reviews.id, { onDelete: "cascade" }),
   speaker: text("speaker").notNull(),
+  summary: text("summary").notNull(),
   topStrengths: text("top_strengths").notNull(),
   topImprovementAreas: text("top_improvement_areas").notNull(),
   nextSessionFocus: text("next_session_focus").notNull(),

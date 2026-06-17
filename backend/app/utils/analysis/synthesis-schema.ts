@@ -29,6 +29,7 @@ const nextSessionFocusSchema = z.object({
 
 const speakerFeedbackSchema = z.object({
   speaker: z.string(),
+  summary: z.string(),
   topStrengths: z.array(topStrengthSchema),
   topImprovementAreas: z.array(topImprovementAreaSchema),
   nextSessionFocus: nextSessionFocusSchema,
@@ -63,6 +64,7 @@ OVERALL (across all commentators):
 - Write a concise overall summary of the session (2-4 sentences)
 
 PER-SPEAKER (one entry per distinct speaker label found in the notes):
+- Write a short narrative summary of how that speaker performed across the session (2-3 sentences)
 - For each speaker, identify their 1-3 personal strengths
 - Identify their 1-3 personal improvement areas
 - Recommend one focused next-session drill for that speaker

@@ -24,6 +24,7 @@ export type NoteCategory =
   | "filler_repetition"
   | "teaching_opportunity";
 
+
 export type NoteSeverity = "positive" | "low" | "medium" | "high";
 
 export type Note = {
@@ -72,6 +73,7 @@ export type NextSessionFocus = {
 
 export type SpeakerFeedback = {
   speaker: string;
+  summary: string;
   topStrengths: TopStrength[];
   topImprovementAreas: TopImprovementArea[];
   nextSessionFocus: NextSessionFocus;

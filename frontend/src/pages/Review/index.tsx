@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useLocation, Link } from 'react-router'
 import type { AnalysisData } from '../Index/types'
 import AnalysisResult from '../../components/AnalysisResult'
@@ -27,25 +27,31 @@ export default function Review() {
 
   if (error) {
     return (
-      <div>
-        <p>Could not load review: {error}</p>
-        <Link to="/">← Back to upload</Link>
+      <div className="py-6">
+        <p className="text-red-400 text-sm mb-4">Could not load review: {error}</p>
+        <Link to="/" className="text-sm text-muted hover:text-white transition-colors">
+          ← Back to upload
+        </Link>
       </div>
     )
   }
 
   if (!result) {
     return (
-      <div>
-        <p>Loading…</p>
-        <Link to="/">← Back to upload</Link>
+      <div className="py-6">
+        <p className="text-muted text-sm mb-4">Loading…</p>
+        <Link to="/" className="text-sm text-muted hover:text-white transition-colors">
+          ← Back to upload
+        </Link>
       </div>
     )
   }
 
   return (
-    <div>
-      <Link to="/">← New upload</Link>
+    <div className="w-full py-6">
+      <Link to="/" className="text-sm text-muted hover:text-white transition-colors mb-8 inline-block">
+        ← New upload
+      </Link>
       <AnalysisResult result={result} />
     </div>
   )

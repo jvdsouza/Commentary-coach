@@ -58,6 +58,7 @@ export async function GET(
     db
       .select({
         speaker: reviewSpeakerFeedback.speaker,
+        summary: reviewSpeakerFeedback.summary,
         topStrengths: reviewSpeakerFeedback.topStrengths,
         topImprovementAreas: reviewSpeakerFeedback.topImprovementAreas,
         nextSessionFocus: reviewSpeakerFeedback.nextSessionFocus,
@@ -138,6 +139,7 @@ export async function GET(
     })),
     speakerFeedback: speakerRows.map((sf) => ({
       speaker: sf.speaker,
+      summary: sf.summary,
       topStrengths: JSON.parse(sf.topStrengths),
       topImprovementAreas: JSON.parse(sf.topImprovementAreas),
       nextSessionFocus: JSON.parse(sf.nextSessionFocus),

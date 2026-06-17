@@ -178,6 +178,8 @@ export const sampleAnalysisData: AnalysisData = {
     speakerFeedback: [
       {
         speaker: 'A',
+        summary:
+          'Speaker A anchored the broadcast with sharp technical analysis and strong narrative framing, consistently making individual moments feel meaningful. The main growth area is meeting newer viewers where they are — translating that expertise into language anyone can follow.',
         topStrengths: [
           {
             title: 'Deep system knowledge',
@@ -213,6 +215,8 @@ export const sampleAnalysisData: AnalysisData = {
       },
       {
         speaker: 'B',
+        summary:
+          "Speaker B's instinct for emotional pacing was the highlight of the session, landing the comeback moment with textbook tension and release. Energy tends to dip during slower neutral exchanges, and that's the clearest opportunity to keep the broadcast feeling consistently alive.",
         topStrengths: [
           {
             title: 'Emotional timing',

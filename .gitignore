@@ -56,3 +56,6 @@ docker-compose.override.yml
 # Temporary files
 *.bak
 ~*
+
+# Sample videos
+samples

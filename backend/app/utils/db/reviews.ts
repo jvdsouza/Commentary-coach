@@ -121,6 +121,7 @@ export async function insertSummary(
       synthesis.speakerFeedback.map((sf) => ({
         reviewId,
         speaker: sf.speaker,
+        summary: sf.summary,
         topStrengths: JSON.stringify(sf.topStrengths),
         topImprovementAreas: JSON.stringify(sf.topImprovementAreas),
         nextSessionFocus: JSON.stringify(sf.nextSessionFocus),
