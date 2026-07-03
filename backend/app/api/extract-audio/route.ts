@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { extractAudio, checkFfmpegAvailable } from "@/app/utils/ffmpeg";
+import { extractAudio, checkFfmpegAvailable, getAudioDuration } from "@/app/utils/ffmpeg";
 import { isValidVideoFile } from "@/app/utils/file-handler";
 import { analyzeCommentary } from "@/app/utils/AssemblyAI";
 import {
@@ -8,8 +8,10 @@ import {
   insertSegments,
   insertChunks,
 } from "@/app/utils/db/reviews";
+import { checkRateLimit } from "@/app/utils/rate-limit";
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+const MAX_DURATION_SECONDS = 90 * 60;    // 90 minutes
 
 /**
  * POST /api/extract-audio
@@ -19,6 +21,9 @@ const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
  * Response: Audio file buffer as response body
  */
 export async function POST(request: NextRequest) {
+  const rateLimited = await checkRateLimit(request);
+  if (rateLimited) return rateLimited;
+
   try {
     // Check if ffmpeg is available
     const ffmpegAvailable = await checkFfmpegAvailable();
@@ -59,6 +64,15 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer
     const buffer = await videoFile.arrayBuffer();
     const videoBuffer = Buffer.from(buffer);
+
+    // Validate duration before spending on transcription or analysis
+    const durationSeconds = await getAudioDuration(videoBuffer);
+    if (durationSeconds > MAX_DURATION_SECONDS) {
+      return NextResponse.json(
+        { error: `Video exceeds the ${MAX_DURATION_SECONDS / 60} minute limit (detected ${Math.ceil(durationSeconds / 60)} min)` },
+        { status: 400 }
+      );
+    }
 
     // Extract audio using ffmpeg (in-memory)
     const audioBuffer = await extractAudio({

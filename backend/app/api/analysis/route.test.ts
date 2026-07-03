@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+vi.mock("@/app/utils/rate-limit", () => ({
+  checkRateLimit: vi.fn().mockResolvedValue(null),
+}));
+
 vi.mock("@/app/utils/analysis", () => ({
   analyzeChunk: vi.fn(),
   synthesizeResults: vi.fn(),
