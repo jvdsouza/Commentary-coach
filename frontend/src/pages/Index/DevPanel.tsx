@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import type { AnalysisData } from './types'
 import { sampleAnalysisData } from '../../fixtures/analysisData'
 import { useReviews } from '../../hooks/useReviews'
+import { apiBaseUrl } from '../../config'
+import { authHeaders } from '../../auth'
 
 interface Props {
   onLoad: (data: AnalysisData) => void
@@ -25,7 +27,7 @@ const DevPanel: React.FC<Props> = ({ onLoad }) => {
     setLoading(true)
     setStatus(null)
     try {
-      const res = await fetch(`http://localhost:3000/api/reviews/${selectedId}`)
+      const res = await fetch(`${apiBaseUrl}/api/reviews/${selectedId}`, { headers: authHeaders() })
       if (!res.ok) {
         const json = await res.json().catch(() => ({}))
         setStatus(`Error: ${(json as { error?: string }).error ?? res.statusText}`)

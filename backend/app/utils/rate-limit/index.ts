@@ -2,7 +2,9 @@ import { RateLimiterMemory } from "rate-limiter-flexible";
 import { NextResponse } from "next/server";
 
 // Shared limiter across extract-audio + analysis so the two routes
-// can't be called in alternation to bypass the per-IP quota.
+// can't be called in alternation to bypass a single user's quota.
+// Keyed by user_id (see checkAuth) so each of the 5-10 beta testers gets
+// their own budget instead of one shared bucket.
 // RateLimiterMemory resets on process restart — see docs/security.md
 // for the upgrade path when running multiple replicas.
 const pipelineLimiter = new RateLimiterMemory({
@@ -10,15 +12,9 @@ const pipelineLimiter = new RateLimiterMemory({
   duration: 600, // per 10 minutes
 });
 
-function getClientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) return forwarded.split(",")[0].trim();
-  return request.headers.get("x-real-ip") ?? "unknown";
-}
-
-export async function checkRateLimit(request: Request): Promise<NextResponse | null> {
+export async function checkRateLimit(userId: string): Promise<NextResponse | null> {
   try {
-    await pipelineLimiter.consume(getClientIp(request));
+    await pipelineLimiter.consume(userId);
     return null;
   } catch (rejection) {
     const secs = Math.ceil(

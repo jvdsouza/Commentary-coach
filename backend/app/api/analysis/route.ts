@@ -2,6 +2,7 @@ import type { TranscriptChunk } from "@/app/utils/AssemblyAI/types";
 import { analyzeChunk, synthesizeResults } from "@/app/utils/analysis";
 import { insertChunks, insertCoachingNotes, insertSummary, setReviewStatus } from "@/app/utils/db/reviews";
 import { checkRateLimit } from "@/app/utils/rate-limit";
+import { checkAuth } from "@/app/utils/auth";
 
 const CHUNK_ANALYSIS_CONCURRENCY = 20;
 
@@ -25,7 +26,10 @@ async function mapWithConcurrency<T, R>(
 }
 
 export async function POST(request: Request) {
-  const rateLimited = await checkRateLimit(request);
+  const auth = await checkAuth(request);
+  if (auth.error) return auth.error;
+
+  const rateLimited = await checkRateLimit(auth.userId);
   if (rateLimited) return rateLimited;
 
   let reviewId: string | null;

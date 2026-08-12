@@ -1,5 +1,7 @@
 import React, { useRef, useState } from 'react'
 import type { AnalysisData, ExtractAudioResponse } from './types'
+import { apiBaseUrl } from '../../config'
+import { authHeaders } from '../../auth'
 
 interface Props {
   onResult: (result: AnalysisData) => void
@@ -71,8 +73,9 @@ const VideoUpload: React.FC<Props> = ({ onResult }) => {
       const formData = new FormData()
       formData.append('video', file)
 
-      const extractRes = await fetch('http://localhost:3000/api/extract-audio', {
+      const extractRes = await fetch(`${apiBaseUrl}/api/extract-audio`, {
         method: 'POST',
+        headers: authHeaders(),
         body: formData,
       })
       if (!extractRes.ok) throw new Error((await extractRes.text()) || extractRes.statusText)
@@ -80,9 +83,9 @@ const VideoUpload: React.FC<Props> = ({ onResult }) => {
 
       setStage('analysing')
 
-      const analysisRes = await fetch('http://localhost:3000/api/analysis', {
+      const analysisRes = await fetch(`${apiBaseUrl}/api/analysis`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: JSON.stringify({ reviewId, chunks }),
       })
       if (!analysisRes.ok) throw new Error((await analysisRes.text()) || analysisRes.statusText)

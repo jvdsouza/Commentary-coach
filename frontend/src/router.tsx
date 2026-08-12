@@ -1,16 +1,28 @@
 import { createBrowserRouter } from 'react-router'
 
 import Layout from './components/Layout/Layout'
+import RequireAuth from './components/RequireAuth'
 import Index from './pages/Index'
+import Login from './pages/Login'
 import Review from './pages/Review'
 import Notfound from './pages/Notfound'
 
 const router = createBrowserRouter([
   {
+    path: '/login',
+    element: (
+      <Layout>
+        <Login />
+      </Layout>
+    ),
+  },
+  {
     path: '/',
     element: (
       <Layout>
-        <Index />
+        <RequireAuth>
+          <Index />
+        </RequireAuth>
       </Layout>
     ),
   },
@@ -18,7 +30,9 @@ const router = createBrowserRouter([
     path: '/review/:id',
     element: (
       <Layout>
-        <Review />
+        <RequireAuth>
+          <Review />
+        </RequireAuth>
       </Layout>
     ),
   },

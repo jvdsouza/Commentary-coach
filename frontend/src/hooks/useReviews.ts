@@ -1,4 +1,6 @@
 import { useState, useCallback } from 'react'
+import { apiBaseUrl } from '../config'
+import { authHeaders } from '../auth'
 
 export interface Review {
   id: string
@@ -17,7 +19,7 @@ export function useReviews() {
     if (state !== 'idle') return
     setState('loading')
     try {
-      const res = await window.fetch('http://localhost:3000/api/reviews')
+      const res = await window.fetch(`${apiBaseUrl}/api/reviews`, { headers: authHeaders() })
       if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
       setReviews(await res.json())
       setState('success')

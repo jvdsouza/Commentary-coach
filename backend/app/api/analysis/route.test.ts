@@ -4,6 +4,10 @@ vi.mock("@/app/utils/rate-limit", () => ({
   checkRateLimit: vi.fn().mockResolvedValue(null),
 }));
 
+vi.mock("@/app/utils/auth", () => ({
+  checkAuth: vi.fn().mockResolvedValue({ userId: "user-1" }),
+}));
+
 vi.mock("@/app/utils/analysis", () => ({
   analyzeChunk: vi.fn(),
   synthesizeResults: vi.fn(),
@@ -18,9 +22,13 @@ vi.mock("@/app/utils/db/reviews", () => ({
 
 import { POST } from "./route";
 import { analyzeChunk, synthesizeResults } from "@/app/utils/analysis";
+import { checkAuth } from "@/app/utils/auth";
+import { checkRateLimit } from "@/app/utils/rate-limit";
 
 const mockAnalyzeChunk = vi.mocked(analyzeChunk);
 const mockSynthesizeResults = vi.mocked(synthesizeResults);
+const mockCheckAuth = vi.mocked(checkAuth);
+const mockCheckRateLimit = vi.mocked(checkRateLimit);
 
 const makeChunkResult = (id = 0) => ({
   chunkStartMs: id * 300_000,
@@ -53,6 +61,24 @@ const postJson = (chunks: unknown, reviewId: string | null = null) =>
 beforeEach(() => vi.clearAllMocks());
 
 describe("POST /api/analysis", () => {
+  it("returns 401 when checkAuth rejects the request", async () => {
+    mockCheckAuth.mockResolvedValueOnce({
+      error: Response.json({ error: "Unauthorized" }, { status: 401 }) as never,
+    });
+
+    const res = await postJson([{ startMs: 0, endMs: 300_000, segments: [] }]);
+    expect(res.status).toBe(401);
+    expect(mockCheckRateLimit).not.toHaveBeenCalled();
+  });
+
+  it("passes the authenticated userId to checkRateLimit", async () => {
+    mockCheckAuth.mockResolvedValueOnce({ userId: "user-42" });
+    mockSynthesizeResults.mockResolvedValueOnce(stubSynthesis);
+
+    await postJson([]);
+    expect(mockCheckRateLimit).toHaveBeenCalledWith("user-42");
+  });
+
   it("returns 400 when body is not valid JSON", async () => {
     const req = new Request("http://localhost/api/analysis", {
       method: "POST",

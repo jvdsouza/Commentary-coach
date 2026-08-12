@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useParams, useLocation, Link } from 'react-router'
 import type { AnalysisData } from '../Index/types'
 import AnalysisResult from '../../components/AnalysisResult'
+import { apiBaseUrl } from '../../config'
+import { authHeaders } from '../../auth'
 
 type State = { result: AnalysisData } | null
 
@@ -16,7 +18,7 @@ export default function Review() {
   useEffect(() => {
     if (result || !id || id === 'local') return
 
-    fetch(`http://localhost:3000/api/reviews/${id}`)
+    fetch(`${apiBaseUrl}/api/reviews/${id}`, { headers: authHeaders() })
       .then((res) => {
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
         return res.json() as Promise<AnalysisData>

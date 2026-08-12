@@ -9,6 +9,7 @@ import {
   insertChunks,
 } from "@/app/utils/db/reviews";
 import { checkRateLimit } from "@/app/utils/rate-limit";
+import { checkAuth } from "@/app/utils/auth";
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 const MAX_DURATION_SECONDS = 90 * 60;    // 90 minutes
@@ -21,7 +22,10 @@ const MAX_DURATION_SECONDS = 90 * 60;    // 90 minutes
  * Response: Audio file buffer as response body
  */
 export async function POST(request: NextRequest) {
-  const rateLimited = await checkRateLimit(request);
+  const auth = await checkAuth(request);
+  if (auth.error) return auth.error;
+
+  const rateLimited = await checkRateLimit(auth.userId);
   if (rateLimited) return rateLimited;
 
   try {
